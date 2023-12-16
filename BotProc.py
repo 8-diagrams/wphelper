@@ -39,4 +39,17 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
             import traceback
             logger.info(f"[on_chat_message_private] exception {traceback.format_exc()}")
         return 
+    
+    elif text == '/set':
+        DataAO.setUserStatus( from_id, DataAO.TGUSts.WAIT_ACTICLE )
+        return 
+    
+    else :
+        if DataAO.getUserStatus( from_id ) == DataAO.TGUSts.WAIT_ACTICLE :
+            return handleSetting(bot, from_id, text,  msg )
+
     return 
+
+def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
+    logger.info(f'[handleSetting] {from_id} => {text} ')
+    bot.sendMessage(from_id, '收到设置信息')

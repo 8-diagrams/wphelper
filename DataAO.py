@@ -36,3 +36,34 @@ def setUserStatus(tg_id, status, params = '' ):
     cur.execute( sql, [tg_id,  status, params, status, params])
     conn.commit()
     cur.close()
+
+
+@Utils.wpTry
+def getUserStatus(tg_id  ):
+    logger.info(f'[getUserStatus] BG {tg_id, }')
+    fields_str = 'status, params'
+    fields = fields_str2list(fields_str)
+    sql = f'select {fields_str} from userstatus where tg_id = %s   '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [tg_id, ])
+    row = cur.fetchone( )
+    resp = getVdict(row, fields)
+    conn.commit()
+    cur.close()
+    return resp 
+
+def fields_str2list(s):
+    li = []
+    for item in s.split(','):
+        item = item.strip()
+        if not item:
+            continue 
+        li.append( item )
+    return li 
+        
+def getVdict(row, fields):
+    res_map = {}
+    for idx , fieldname in enumerate(fields):
+        res_map[ fieldname ] = row[idx]
+    return res_map 
