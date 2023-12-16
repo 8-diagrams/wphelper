@@ -56,3 +56,19 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
 def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
     logger.info(f'[handleSetting] {from_id} => {text} ')
     bot.sendMessage(from_id, '收到设置信息')
+    items = text.split()
+    if len(items) < 3:
+        bot.sendMessage(from_id, text = '需要：  网址 用户名 密码')
+        return 
+    web = items[0]
+    username = items[1]
+    pwd = items[2]
+    import DataAO
+    try:
+        ret = DataAO.setWpPwd(web, username, pwd )
+        if ret :
+            bot.sendMessage( from_id, "添加网址成功")
+    except Exception as e:
+        bot.sendMessage( from_id, "添加网址失败")
+        return False 
+        

@@ -53,6 +53,19 @@ def getUserStatus(tg_id  ):
     cur.close()
     return resp 
 
+
+@Utils.wpTry
+def setWpPwd(tg_id, website,username, pwd):
+    logger.info( f'[setWpPwd] BG {tg_id, }')
+    sql = 'insert into wpsetting ( tg_id, website, username, pwd ) values (%s, %s, %s, %s ) on duplicate key update username =%s, pwd = %s   '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [tg_id,  website, username, pwd, username, pwd ])
+    conn.commit()
+    cur.close()
+    return True 
+
+
 def fields_str2list(s):
     li = []
     for item in s.split(','):
