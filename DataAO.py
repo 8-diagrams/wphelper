@@ -21,3 +21,17 @@ def access(tg_id):
 
 
     
+class TGUSts:
+    INIT:'INIT'
+    WAIT_SET:'WAIT_SET'
+    WAIT_ACTICLE:'WAIT_ACTICLE'
+
+@Utils.WLocker("admin")
+@Utils.wpTry
+def setUserStatus(tg_id, status, params = '' ):
+    sql = 'insert into userstatus ( tg_id, status, params ) values (%s, %s, %s) on duplicate key update status =%s, params = %s   '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [tg_id,  status, params, status, params])
+    conn.commit()
+    cur.close()
