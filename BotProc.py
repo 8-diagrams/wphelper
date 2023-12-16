@@ -43,7 +43,10 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     elif text == '/set':
         DataAO.setUserStatus( from_id, DataAO.TGUSts.WAIT_ACTICLE )
         return 
-    
+    elif text == '/getstatus':
+        st = DataAO.getUserStatus( from_id  )
+        bot.sendMessage(from_id, text = f'{st}')
+        return 
     else :
         if DataAO.getUserStatus( from_id ) == DataAO.TGUSts.WAIT_ACTICLE :
             return handleSetting(bot, from_id, text,  msg )
