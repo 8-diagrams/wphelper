@@ -48,7 +48,7 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         bot.sendMessage(from_id, text = f'{st}')
         return 
     else :
-        if DataAO.getUserStatus( from_id ) == DataAO.TGUSts.WAIT_SET :
+        if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
 
     return 

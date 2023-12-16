@@ -64,6 +64,8 @@ def fields_str2list(s):
         
 def getVdict(row, fields):
     res_map = {}
+    if not row:
+        return res_map
     for idx , fieldname in enumerate(fields):
         res_map[ fieldname ] = row[idx]
     return res_map 
