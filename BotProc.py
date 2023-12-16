@@ -33,7 +33,10 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     text = text.strip()
     logger.info(f"[on_chat_message_private] got text [{text}]")
     if text == '/start':
-        saveSt =  DataAO.setUserStatus( from_id, DataAO.TGUSts.INIT)
-        
+        try:
+            saveSt =  DataAO.setUserStatus( from_id, DataAO.TGUSts.INIT)
+        except Exception as e:
+            import traceback
+            logger.info(f"[on_chat_message_private] exception {traceback.format_exc()}")
         return 
     return 
