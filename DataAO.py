@@ -22,9 +22,9 @@ def access(tg_id):
 
     
 class TGUSts:
-    INIT:'INIT'
-    WAIT_SET:'WAIT_SET'
-    WAIT_ACTICLE:'WAIT_ACTICLE'
+    INIT ='INIT'
+    WAIT_SET ='WAIT_SET'
+    WAIT_ACTICLE = 'WAIT_ACTICLE'
 
 @Utils.WLocker("status")
 @Utils.wpTry
