@@ -26,9 +26,10 @@ class TGUSts:
     WAIT_SET:'WAIT_SET'
     WAIT_ACTICLE:'WAIT_ACTICLE'
 
-@Utils.WLocker("admin")
+@Utils.WLocker("status")
 @Utils.wpTry
 def setUserStatus(tg_id, status, params = '' ):
+    logger.info(f'[setUserStatus] BG {tg_id, status, params}')
     sql = 'insert into userstatus ( tg_id, status, params ) values (%s, %s, %s) on duplicate key update status =%s, params = %s   '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
