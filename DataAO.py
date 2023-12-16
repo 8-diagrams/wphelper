@@ -14,7 +14,7 @@ def access(tg_id):
     row = cur.fetchone() 
     users_cnt = row[0]
     level = 0 if users_cnt > 0 else 99 
-    ins_sql = 'insert into admin (tg_id, role) values (%s, %s) on update key update access_time =  access_time+1  '
+    ins_sql = 'insert into admin (tg_id, role) values (%s, %s) on duplicate key update access_time =  access_time+1  '
     cur.execute(ins_sql , [ tg_id  ,level] )
     conn.commit()
     cur.close()
