@@ -10,7 +10,7 @@ import Utils
 def access(tg_id):
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
-    cur.execute('select count(*) from admin ')
+    cur.execute('select count(*) from admins ')
     row = cur.fetchone() 
     users_cnt = row[0]
     level = 0 if users_cnt > 0 else 99 
