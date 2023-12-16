@@ -31,7 +31,9 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         logger.info(f'[on_chat_message_private] no hanble msg {msg}') 
         return 
     text = text.strip()
-
+    logger.info(f"[on_chat_message_private] got text [{text}]")
     if text == '/start':
-        DataAO.setUserStatus( from_id, DataAO.TGUSts.INIT)
+        saveSt =  DataAO.setUserStatus( from_id, DataAO.TGUSts.INIT)
+        
+        return 
     return 
