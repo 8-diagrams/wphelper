@@ -65,7 +65,7 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
     pwd = items[2]
     import DataAO
     try:
-        ret = DataAO.setWpPwd(web, username, pwd )
+        ret = DataAO.setWpPwd(from_id, web, username, pwd )
         if ret :
             bot.sendMessage( from_id, "添加网址成功")
     except Exception as e:
