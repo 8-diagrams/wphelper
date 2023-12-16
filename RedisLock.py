@@ -23,7 +23,7 @@ def connect_redis():
     hostname = redisHostName #'redis_server'
     return redis.Redis(hostname, port=6379)
 
-def acquire_lock(conn, lockname, args, acquite_timeout=30):
+def acquire_lock(conn: redis.Redis, lockname, args, acquite_timeout=30):
     identifier = str(uuid.uuid4())
     end = time.time() + acquite_timeout
     while time.time() < end:
@@ -31,6 +31,7 @@ def acquire_lock(conn, lockname, args, acquite_timeout=30):
         if conn.setnx('lock:' + lockname, identifier): 
             # output the proc args
             #print('Get Lock for: '+ str(args))
+            conn.expire( 'lock:' + lockname , 60 )
             return identifier
     return False
 
