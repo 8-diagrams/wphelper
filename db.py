@@ -22,7 +22,7 @@ def getdbconn():
     port= int( gConfig.get('mysql','port') ),
     user= gConfig.get('mysql','user') ,
     passwd= gConfig.get('mysql','passwd') ,
-    db='tgbotweb',
+    db='apphome',
     charset='utf8mb4'
     )
     #GLogger.info("Connect to DB " + gConfig.get('mysql','host') + ' - ' + str(connect) )
