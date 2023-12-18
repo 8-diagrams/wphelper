@@ -62,6 +62,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         wpid = wpOp.post( resp.get('title'), resp.get('content') , category=category, post_tag=post_tag  )
         DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
+        bot.sendMessage(from_id, "文章发布成功")
 
     elif data.startswith('oper_cat_'):
         myid =  data[len('oper_cat_') : ]
@@ -197,7 +198,7 @@ def saveContent_cat(bot: telepot.Bot , from_id, text:str):
     cats_str = ','.join(cats)
     DataAO.updateArticle(from_id, artcleId, {'category': cats_str })
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
-    #sendOperPanel(bot, from_id, title, artcleId )
+    bot.sendMessage(from_id, "文章类型更新成功")
     return True 
 
 
