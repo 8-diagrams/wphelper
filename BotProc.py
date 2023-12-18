@@ -58,7 +58,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         if resp.get('category'):
             category = resp.get('category').split(",")
         wpid = wpOp.post( resp.get('title'), resp.get('content') , category=category, post_tag=post_tag  )
-        DataAO.updateArticle(from_id, myid, [''], [])
+        DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
 
 
