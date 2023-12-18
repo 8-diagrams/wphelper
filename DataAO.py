@@ -66,14 +66,18 @@ def setWpPwd(tg_id, website,username, pwd, memo):
     return True 
 
 @Utils.wpTry
-def getWpSetting(tg_id ):
+def getWpSetting(tg_id , sitename = None ):
     logger.info( f'[getWpSetting] BG {tg_id, }')
     fields_str = 'tg_id, website, username, pwd, wpname'
     fields = fields_str2list(fields_str)
-    sql = f'select {fields_str} from wpsetting where  tg_id = %s   '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
-    cur.execute( sql, [tg_id, ])
+    if not sitename :
+        sql = f'select {fields_str} from wpsetting where  tg_id = %s   '
+        cur.execute( sql, [tg_id, ])
+    else:
+        sql = f'select {fields_str} from wpsetting where  tg_id = %s and website = %s '
+        cur.execute( sql, [tg_id, sitename ])
     rows = cur.fetchall()
     conn.commit()
     cur.close()

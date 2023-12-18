@@ -20,7 +20,21 @@ def on_chat_message(bot : telepot.Bot, msg :dict ):
 
 def on_callback_query(bot : telepot.Bot, msg :dict ):
     logger.info(f"[on_callback_query] handle msg {msg}")
+    if msg.get('data') :
+        procCallback( bot, msg )
     return 
+
+def procCallback(bot : telepot.Bot, msg :dict ):
+    from_id = msg['from']['id']
+    data = str( msg.get('data') )
+    if data.startswith('push_'):
+        sitename =  data[len('push_') : ]
+        sitesItem = DataAO.getWpSetting(from_id, sitename) 
+        myname = sitename 
+        if sitesItem:
+            myname = sitesItem[0].get('wpname')
+        DataAO.setUserStatus( DataAO.TGUSts.WAIT_ACTICLE, sitename )
+        bot.sendMessage(from_id, f"请回复消息，发文给 {myname}")
 
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
