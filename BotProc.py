@@ -58,7 +58,7 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
     bot.sendMessage(from_id, '收到设置信息')
     items = text.split()
     if len(items) < 3:
-        bot.sendMessage(from_id, text = '需要：  网址 用户名 密码')
+        bot.sendMessage(from_id, text = '需要：  网址 用户名 密码 备注(可选)')
         return 
     web = items[0]
     username = items[1]
@@ -68,7 +68,9 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
         ret = DataAO.setWpPwd(from_id, web, username, pwd )
         if ret :
             bot.sendMessage( from_id, "添加网址成功")
+            DataAO.setUserStatus( DataAO.TGUSts.INIT)
     except Exception as e:
         bot.sendMessage( from_id, "添加网址失败")
+        bot.sendMessage(from_id, text = '需要：  网址 用户名 密码 备注(可选)')
         return False 
         
