@@ -153,7 +153,7 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
     for line in lines:
         line=line.strip()
         if line:
-            line_push(line )
+            line_push.append(line )
     title = line_push[0]
     content = "\n".join( line_push[1:])
     myid = DataAO.saveArticle(from_id, sitename, title, content, None , [] , [] )
