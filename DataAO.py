@@ -55,12 +55,12 @@ def getUserStatus(tg_id  ):
 
 
 @Utils.wpTry
-def setWpPwd(tg_id, website,username, pwd):
+def setWpPwd(tg_id, website,username, pwd, memo):
     logger.info( f'[setWpPwd] BG {tg_id, }')
-    sql = 'insert into wpsetting ( tg_id, website, username, pwd ) values (%s, %s, %s, %s ) on duplicate key update username =%s, pwd = %s   '
+    sql = 'insert into wpsetting ( tg_id, website, username, pwd, wpname ) values (%s, %s, %s, %s, %s ) on duplicate key update username =%s, pwd = %s   '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
-    cur.execute( sql, [tg_id,  website, username, pwd, username, pwd ])
+    cur.execute( sql, [tg_id,  website, username, pwd, username, pwd, memo ])
     conn.commit()
     cur.close()
     return True 

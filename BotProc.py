@@ -63,9 +63,13 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
     web = items[0]
     username = items[1]
     pwd = items[2]
+    if len(items) > 3 :
+        memo = items[3]
+    else:
+        meme = web
     import DataAO
     try:
-        ret = DataAO.setWpPwd(from_id, web, username, pwd )
+        ret = DataAO.setWpPwd(from_id, web, username, pwd, meme )
         if ret :
             bot.sendMessage( from_id, "添加网址成功")
             DataAO.setUserStatus( DataAO.TGUSts.INIT)
