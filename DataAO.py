@@ -160,7 +160,7 @@ def findArticle(tg_id, myid):
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
     cur.execute( sql, [ tg_id, myid  ])
-    row = cur.fetchall()
+    row = cur.fetchone()
     resp = getVdict(row, fields)
     conn.commit()
     cur.close()
