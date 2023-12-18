@@ -91,7 +91,8 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     elif text == '/pub':
         return showPublish(bot, from_id )
     else :
-        logger.info(f"[on_chat_message_private]  to default handleer")
+        user_status = DataAO.getUserStatus( from_id ).get('status')
+        logger.info(f"[on_chat_message_private]  to default handler userstatus : [{user_status}]")
         if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
     
