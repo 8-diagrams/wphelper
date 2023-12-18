@@ -195,7 +195,7 @@ def saveContent_cat(bot: telepot.Bot , from_id, text:str):
     if len(cats) == 1:
         cats = text.split("，")
     cats_str = ','.join(cats)
-    DataAO.updateArticle(from_id, artcleId, {'category', cats_str })
+    DataAO.updateArticle(from_id, artcleId, {'category': cats_str })
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
     #sendOperPanel(bot, from_id, title, artcleId )
     return True 
