@@ -172,7 +172,7 @@ def updateArticle(tg_id, myid, upDict:dict):
     logger.info( f'[updateArticle] BG {tg_id, }')
     #fields_str = 'tg_id, sitename, title, content, face_img_url, post_tag, category, id, status'
     #fields = fields_str2list(fields_str) 
-    fns = [ f'{ key }' + ' = %s }' for key in upDict.keys() ]
+    fns = [ f'{ key }' + ' = %s ' for key in upDict.keys() ]
     sql = f'update articles set {",".join(fns) } where tg_id = %s and id = %s    '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
