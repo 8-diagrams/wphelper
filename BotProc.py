@@ -48,9 +48,13 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         st = DataAO.getUserStatus( from_id  )
         bot.sendMessage(from_id, text = f'{st}')
         return 
+    elif text.startswith('push_'):
+        raw = text[len('push_')]
+        bot.sendMessage(from_id, f'选择了网站[{raw}]')
     else :
         if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
+        
 
     return 
 
@@ -96,3 +100,4 @@ def showPublish(bot: telepot.Bot, from_id ):
         inline_keyboard.append( button )
     markup = InlineKeyboardMarkup( inline_keyboard=[inline_keyboard] )
     bot.sendMessage( from_id, "请选择需要发送的网站", reply_markup=markup)
+    return 
