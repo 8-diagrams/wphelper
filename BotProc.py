@@ -183,6 +183,7 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
     sendOperPanel(bot, from_id, title, myid )
     return True 
 
+@Utils.wpTry
 def saveContent_cat(bot: telepot.Bot , from_id, text:str):
     statusSet = DataAO.getUserStatus(from_id)
     artcleId = statusSet.get('params')
