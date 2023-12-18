@@ -23,7 +23,7 @@ def on_callback_query(bot : telepot.Bot, msg :dict ):
     if msg.get('data') :
         procCallback( bot, msg )
     return 
-
+@Utils.wpTry
 def procCallback(bot : telepot.Bot, msg :dict ):
     from_id = msg['from']['id']
     data = str( msg.get('data') )
