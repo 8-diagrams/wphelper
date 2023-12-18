@@ -33,7 +33,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         myname = sitename 
         if sitesItem:
             myname = sitesItem[0].get('wpname')
-        DataAO.setUserStatus( DataAO.TGUSts.WAIT_ACTICLE, sitename )
+        DataAO.setUserStatus( from_id, DataAO.TGUSts.WAIT_ACTICLE, sitename )
         bot.sendMessage(from_id, f"请回复消息，发文给 {myname}")
 
 
@@ -92,7 +92,7 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
         ret = DataAO.setWpPwd(from_id, web, username, pwd, memo )
         if ret :
             bot.sendMessage( from_id, "添加网址成功")
-            DataAO.setUserStatus( DataAO.TGUSts.INIT)
+            DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
     except Exception as e:
         import traceback
         logger.info(f"[handleSetting] exception {traceback.format_exc()}")
@@ -107,7 +107,7 @@ def showPublish(bot: telepot.Bot, from_id ):
     li = DataAO.getWpSetting( from_id )
     if not li :
         bot.sendMessage( from_id, "请先添加wordpress站点")
-        DataAO.setUserStatus( DataAO.TGUSts.INIT)
+        DataAO.setUserStatus(from_id,  DataAO.TGUSts.INIT)
         return
     inline_keyboard = [] 
     for site in li:
