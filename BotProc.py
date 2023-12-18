@@ -52,7 +52,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
             logger.info(f"[oper_pub_] not found article {myid}")
             bot.sendMessage(from_id, 'wp设置不存在')
             return 
-        wpOp = WpUtils.WPHelper( sett.get('website'), sett.get('username'), sett.get('pwd') )
+        wpOp = WpUtils.WPHelper( sett[0].get('website'), sett[0].get('username'), sett[0].get('pwd') )
         post_tag = []
         category = []
         if resp.get('category'):
