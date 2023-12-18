@@ -74,6 +74,8 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
             bot.sendMessage( from_id, "添加网址成功")
             DataAO.setUserStatus( DataAO.TGUSts.INIT)
     except Exception as e:
+        import traceback
+        logger.info(f"[handleSetting] exception {traceback.format_exc()}")
         bot.sendMessage( from_id, "添加网址失败")
         bot.sendMessage(from_id, text = '需要：  网址 用户名 密码 备注(可选)')
         return False 
