@@ -77,7 +77,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
             return 
          
         logger.info(f"[oper_cat_] {from_id}   acticle status {resp.get('status') } {  resp.get('title') } ")
-        DataAO.setUserStatus(from_id, DataAO.TGUSts.DRAFT_ACTICLE_EDIT_CAT)
+        DataAO.setUserStatus(from_id, DataAO.TGUSts.DRAFT_ACTICLE_EDIT_CAT, myid)
         bot.sendMessage(from_id,"请回复文章类型 用 ，隔开")
 
 
