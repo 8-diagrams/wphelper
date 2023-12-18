@@ -111,17 +111,20 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     else :
         user_status = DataAO.getUserStatus( from_id ).get('status')
         logger.info(f"[on_chat_message_private]  to default handler userstatus : [{user_status}]")
+        #
         if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
-    
         elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_ACTICLE :
             logger.info(f"[on_chat_message_private] content size:{len(text)} ")
             saveContent(bot, from_id, text )
             return 
-        elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_ACTICLE_EDIT_CAT :
+        elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.DRAFT_ACTICLE_EDIT_CAT  :
             logger.info(f"[on_chat_message_private] cat size:{len(text)} ")
             saveContent_cat(bot, from_id, text )
             return 
+        else:
+            logger.info(f"[on_chat_message_private]  to default handler no proc")
+
         
 
     return 
@@ -187,6 +190,7 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
 def saveContent_cat(bot: telepot.Bot , from_id, text:str):
     statusSet = DataAO.getUserStatus(from_id)
     artcleId = statusSet.get('params')
+    text = text.replace("，", ',')
     cats = text.split(",")
     if len(cats) == 1:
         cats = text.split("，")
