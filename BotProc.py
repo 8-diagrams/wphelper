@@ -164,7 +164,7 @@ def sendOperPanel(bot, from_id,  title, myid ):
     button = InlineKeyboardButton(text='放弃', callback_data=f'oper_cancel_{myid}')
     inline_keyboard.append( button )
     markup = InlineKeyboardMarkup( inline_keyboard=[inline_keyboard] )
-    bot.sendMessage( from_id, f"操作 {title}", reply_markup=markup)
+    bot.sendMessage( from_id, f"编辑文章： {title}", reply_markup=markup)
     
 
 def saveContent(bot: telepot.Bot , from_id, text:str):
