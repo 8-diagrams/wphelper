@@ -77,7 +77,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
          
         logger.info(f"[oper_cat_] {from_id}   acticle status {resp.get('status') } {  resp.get('title') } ")
         DataAO.setUserStatus(from_id, DataAO.TGUSts.DRAFT_ACTICLE_EDIT_CAT)
-
+        bot.sendMessage(from_id,"请回复文章类型 用 ，隔开")
 
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
@@ -187,6 +187,8 @@ def saveContent_cat(bot: telepot.Bot , from_id, text:str):
     statusSet = DataAO.getUserStatus(from_id)
     artcleId = statusSet.get('params')
     cats = text.split(",")
+    if len(cats) == 1:
+        cats = text.split("，")
     cats_str = ','.join(cats)
     DataAO.updateArticle(from_id, artcleId, {'category', cats_str })
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
