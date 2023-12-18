@@ -70,7 +70,7 @@ def getWpSetting(tg_id ):
     logger.info( f'[getWpSetting] BG {tg_id, }')
     fields_str = 'tg_id, website, username, pwd, wpname'
     fields = fields_str2list(fields_str)
-    sql = f'select {fields_str} from wpsetting tg_id = %s   '
+    sql = f'select {fields_str} from wpsetting where  tg_id = %s   '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
     cur.execute( sql, [tg_id, ])
