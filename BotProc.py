@@ -60,7 +60,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         wpid = wpOp.post( resp.get('title'), resp.get('content') , category=category, post_tag=post_tag  )
         DataAO.updateArticle(from_id, myid, [''], [])
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
-        
+
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     logger.info(f"[on_chat_message_private] handle msg {msg}")
@@ -91,7 +91,7 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     elif text == '/pub':
         return showPublish(bot, from_id )
     else :
-
+        logger.info(f"[on_chat_message_private]  to default handleer")
         if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
     
