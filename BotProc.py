@@ -1,6 +1,7 @@
 import telepot
 from telepot.loop import MessageLoop
-from telepot.namedtuple import ReplyKeyboardMarkup
+
+from telepot.namedtuple import ReplyKeyboardMarkup,InlineKeyboardButton,InlineKeyboardMarkup
 import db as mydb 
 import Utils
 import mylog 
@@ -67,7 +68,6 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
         memo = items[3]
     else:
         memo = web
-    import DataAO
     try:
         ret = DataAO.setWpPwd(from_id, web, username, pwd, memo )
         if ret :
@@ -79,4 +79,20 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
         bot.sendMessage( from_id, "添加网址失败")
         bot.sendMessage(from_id, text = '需要：  网址 用户名 密码 备注(可选)')
         return False 
-        
+
+
+
+def showPublish(bot: telepot.Bot, from_id ):
+    
+    li = DataAO.getWpSetting( from_id )
+    if not li :
+        bot.sendMessage( from_id, "请先添加wordpress站点")
+        DataAO.setUserStatus( DataAO.TGUSts.INIT)
+        return
+    inline_keyboard = [] 
+    for site in li:
+        website = site.get('website')
+        button = InlineKeyboardButton(text=site.get('wpname'), callback_data=f'push_{website}')
+        inline_keyboard.append( button )
+    markup = InlineKeyboardMarkup( inline_keyboard=[inline_keyboard] )
+    bot.sendMessage( from_id, "请选择需要发送的网站", reply_markup=markup)

@@ -65,6 +65,23 @@ def setWpPwd(tg_id, website,username, pwd, memo):
     cur.close()
     return True 
 
+@Utils.wpTry
+def getWpSetting(tg_id ):
+    logger.info( f'[getWpSetting] BG {tg_id, }')
+    fields_str = 'tg_id, website, username, pwd, wpname'
+    fields = fields_str2list(fields_str)
+    sql = f'select {fields_str} from wpsetting tg_id = %s   '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [tg_id, ])
+    rows = cur.fetchall()
+    conn.commit()
+    cur.close()
+    li =[]
+    for row in rows:
+        resp = getVdict(row, fields )
+        li.append(resp )
+    return li  
 
 def fields_str2list(s):
     li = []
