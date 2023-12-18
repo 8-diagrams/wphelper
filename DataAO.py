@@ -25,6 +25,7 @@ class TGUSts:
     INIT ='INIT'
     WAIT_SET ='WAIT_SET'
     WAIT_ACTICLE = 'WAIT_ACTICLE'
+    DRAFT_ACTICLE = 'DRAFT_ACTICLE'
 
 @Utils.WLocker("status")
 @Utils.wpTry
@@ -103,3 +104,82 @@ def getVdict(row, fields):
     for idx , fieldname in enumerate(fields):
         res_map[ fieldname ] = row[idx]
     return res_map 
+
+'''
+	`tg_id` INT(11) NULL DEFAULT NULL,
+	`sitename` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`title` VARCHAR(1024) NULL DEFAULT NULL COMMENT '主题' COLLATE 'utf8_general_ci',
+	`content` LONGTEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`face_img_url` VARCHAR(2048) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`wp_post_id` CHAR(64) NULL DEFAULT NULL COMMENT 'wp的文章id' COLLATE 'utf8_general_ci',
+	`wp_img_id` CHAR(64) NULL DEFAULT NULL COMMENT 'wp 的图片id' COLLATE 'utf8_general_ci',
+	`post_tag` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`category` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`status`
+'''
+
+@Utils.wpTry
+def saveArticle(tg_id, sitename, title, content,  face_img_url, post_tag = [], category=[] ):
+    logger.info( f'[saveArticle] BG {tg_id, }')
+    fields_str = 'tg_id, sitename, title, content,  face_img_url, post_tag, category'
+    fields = fields_str2list(fields_str) 
+    sql = f'insert into articles (  {fields_str}  ) values ( { [ "%s" ] * len(fields) } )    '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [tg_id, sitename, title, content,  face_img_url, ','.join(post_tag) , ','.join(category) ])
+    myid = conn.insert_id()
+    conn.commit()
+    cur.close()
+    return myid 
+
+@Utils.wpTry
+def getArticles(tg_id, sitename):
+    logger.info( f'[getArticle] BG {tg_id, }')
+    fields_str = 'tg_id, sitename, title, content,  face_img_url, post_tag, category, id'
+    fields = fields_str2list(fields_str) 
+    sql = f'select  {fields_str}  from articles where tg_id = %s and sitename = %s  order by id desc  '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [ tg_id, sitename  ])
+    li = []
+    rows = cur.fetchall()
+    for row in rows:
+        resp = getVdict(row, fields)
+        li.append( resp )
+    conn.commit()
+    cur.close()
+    return li 
+
+@Utils.wpTry
+def findArticle(tg_id, myid):
+    logger.info( f'[findArticles] BG {tg_id, }')
+    fields_str = 'tg_id, sitename, title, content, face_img_url, post_tag, category, id, status'
+    fields = fields_str2list(fields_str) 
+    sql = f'select  {fields_str}  from articles where tg_id = %s and id = %s  limit 1  '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    cur.execute( sql, [ tg_id, myid  ])
+    row = cur.fetchall()
+    resp = getVdict(row, fields)
+    conn.commit()
+    cur.close()
+    return resp 
+
+
+@Utils.wpTry
+def updateArticle(tg_id, myid, upDict:dict):
+    logger.info( f'[updateArticle] BG {tg_id, }')
+    #fields_str = 'tg_id, sitename, title, content, face_img_url, post_tag, category, id, status'
+    #fields = fields_str2list(fields_str) 
+    fns = [ f'{ key }' + ' = %s }' for key in upDict.keys() ]
+    sql = f'update articles set {",".join(fns) } where tg_id = %s and id = %s    '
+    conn = dbmgr.Connector( dbpool ).get_conn()
+    cur = conn.cursor()
+    values = [ k for k in  upDict.values() ]
+    pvalues = [ tg_id, myid  ]
+    pvalues = values.extend( pvalues )
+    cur.execute( sql, pvalues )
+    logger.info(f"[updateArticle-sql] { sql, pvalues }")
+    conn.commit()
+    cur.close()
+    return True  

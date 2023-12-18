@@ -34,8 +34,33 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         if sitesItem:
             myname = sitesItem[0].get('wpname')
         DataAO.setUserStatus( from_id, DataAO.TGUSts.WAIT_ACTICLE, sitename )
-        bot.sendMessage(from_id, f"请回复消息，发文给 {myname}")
-
+        bot.sendMessage(from_id, f"请回复消息，发文给 {myname} ")
+    elif data.startswith('oper_pub_'):
+        myid =  data[len('oper_pub_') : ]
+        resp = DataAO.findArticle(from_id, myid )
+        if not resp:
+            logger.info(f"[oper_pub_] not found article {myid}")
+            bot.sendMessage(from_id, '文章不存在啊')
+            return 
+        if resp.get('status') != 'INIT':
+            logger.info(f"[oper_pub_] not found article {myid}")
+            bot.sendMessage(from_id, '文章已发布')
+            return 
+        import WpUtils
+        sett = DataAO.getWpSetting( from_id, resp.get('sitename') )
+        if resp.get('status') != 'INIT':
+            logger.info(f"[oper_pub_] not found article {myid}")
+            bot.sendMessage(from_id, 'wp设置不存在')
+            return 
+        wpOp = WpUtils.WPHelper( sett.get('website'), sett.get('username'), sett.get('pwd') )
+        post_tag = []
+        category = []
+        if resp.get('category'):
+            category = resp.get('category').split(",")
+        wpid = wpOp.post( resp.get('title'), resp.get('content') , category=category, post_tag=post_tag  )
+        DataAO.updateArticle(from_id, myid, [''], [])
+        DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
+        
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     logger.info(f"[on_chat_message_private] handle msg {msg}")
@@ -62,14 +87,18 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         st = DataAO.getUserStatus( from_id  )
         bot.sendMessage(from_id, text = f'{st}')
         return 
-    elif text.startswith('push_'):
-        raw = text[len('push_')]
-        bot.sendMessage(from_id, f'选择了网站[{raw}]')
+    
     elif text == '/pub':
         return showPublish(bot, from_id )
     else :
+
         if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
+    
+        elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_ACTICLE :
+            logger.info(f"[on_chat_message_private] content size:{len(text)} ")
+            saveContent(bot, from_id, text )
+            return 
         
 
     return 
@@ -100,7 +129,37 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
         bot.sendMessage(from_id, text = '需要：  网址 用户名 密码 备注(可选)')
         return False 
 
+def sendOperPanel(bot, from_id,  title, myid ):
+    myid = str(myid)
+    inline_keyboard = []
+    button = InlineKeyboardButton(text='发布', callback_data=f'oper_pub_{myid}')
+    inline_keyboard.append( button )
+    button = InlineKeyboardButton(text='设置封面', callback_data=f'oper_face_{myid}')
+    inline_keyboard.append( button )
+    button = InlineKeyboardButton(text='设置分类', callback_data=f'oper_cat_{myid}')
+    inline_keyboard.append( button )
+    button = InlineKeyboardButton(text='放弃', callback_data=f'oper_cancel_{myid}')
+    inline_keyboard.append( button )
+    markup = InlineKeyboardMarkup( inline_keyboard=[inline_keyboard] )
+    bot.sendMessage( from_id, f"操作 {title}", reply_markup=markup)
+    
 
+def saveContent(bot: telepot.Bot , from_id, text:str):
+    statusSet = DataAO.getUserStatus(from_id)
+    sitename = statusSet.get('params')
+    lines = text.split("\n")
+    line_push = []
+    for line in lines:
+        line=line.strip()
+        if line:
+            line_push(line )
+    title = line_push[0]
+    content = "\n".join( line_push[1:])
+    myid = DataAO.saveArticle(from_id, sitename, title, content, None , [] , [] )
+    DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(myid) ) 
+    sendOperPanel(bot, from_id, title, myid )
+    return True 
+    
 
 def showPublish(bot: telepot.Bot, from_id ):
     
