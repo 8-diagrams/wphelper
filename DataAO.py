@@ -179,9 +179,9 @@ def updateArticle(tg_id, myid, upDict:dict):
     cur = conn.cursor()
     values = [ str(k) for k in  upDict.values() ]
     pvalues = [ tg_id, myid  ]
-    pvalues = values.extend( pvalues )
-    logger.info(f"[updateArticle-sql] { sql, pvalues }")
-    cur.execute( sql, pvalues )
+    values.extend( pvalues )
+    logger.info(f"[updateArticle-sql] { sql, values }")
+    cur.execute( sql, values )
     
     conn.commit()
     cur.close()
