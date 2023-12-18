@@ -156,7 +156,7 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
             line_push.append(line )
     title = line_push[0]
     content = "\n".join( line_push[1:])
-    myid = DataAO.saveArticle(from_id, sitename, title, content, None , [] , [] )
+    myid = DataAO.saveArticle(from_id, sitename, title, content, '' , [] , [] )
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(myid) ) 
     sendOperPanel(bot, from_id, title, myid )
     return True 

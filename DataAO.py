@@ -126,6 +126,7 @@ def saveArticle(tg_id, sitename, title, content,  face_img_url, post_tag = [], c
     sql = f'insert into articles (  {fields_str}  ) values ( { [ "%s" ] * len(fields) } )    '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
+    logger.info(f"[saveArticle] ==> { sql, [tg_id, sitename, title, content,  face_img_url, ','.join(post_tag) , ','.join(category) ] }")
     cur.execute( sql, [tg_id, sitename, title, content,  face_img_url, ','.join(post_tag) , ','.join(category) ])
     myid = conn.insert_id()
     conn.commit()
