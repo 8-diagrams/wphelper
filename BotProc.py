@@ -51,6 +51,8 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     elif text.startswith('push_'):
         raw = text[len('push_')]
         bot.sendMessage(from_id, f'选择了网站[{raw}]')
+    elif text == '/pub':
+        return showPublish(bot, from_id )
     else :
         if DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_SET :
             return handleSetting(bot, from_id, text,  msg )
