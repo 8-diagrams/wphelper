@@ -176,11 +176,12 @@ def updateArticle(tg_id, myid, upDict:dict):
     sql = f'update articles set {",".join(fns) } where tg_id = %s and id = %s    '
     conn = dbmgr.Connector( dbpool ).get_conn()
     cur = conn.cursor()
-    values = [ k for k in  upDict.values() ]
+    values = [ str(k) for k in  upDict.values() ]
     pvalues = [ tg_id, myid  ]
     pvalues = values.extend( pvalues )
-    cur.execute( sql, pvalues )
     logger.info(f"[updateArticle-sql] { sql, pvalues }")
+    cur.execute( sql, pvalues )
+    
     conn.commit()
     cur.close()
     return True  

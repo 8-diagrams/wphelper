@@ -48,15 +48,17 @@ def procCallback(bot : telepot.Bot, msg :dict ):
             return 
         import WpUtils
         sett = DataAO.getWpSetting( from_id, resp.get('sitename') )
+        logger.info(f"[oper_pub_]  acticle status {resp.get('status') } {  resp.get('title') } ")
         if resp.get('status') != 'INIT':
-            logger.info(f"[oper_pub_] not found article {myid}")
-            bot.sendMessage(from_id, 'wp设置不存在')
+            logger.info(f"[oper_pub_] not found valid article {myid}")
+            bot.sendMessage(from_id, '文章已经发布/取消。')
             return 
         wpOp = WpUtils.WPHelper( sett[0].get('website'), sett[0].get('username'), sett[0].get('pwd') )
         post_tag = []
         category = []
         if resp.get('category'):
             category = resp.get('category').split(",")
+        logger.info(f"[oper_pub_] {from_id} begin post {sett[0].get('website')} => {resp.get('title')}")
         wpid = wpOp.post( resp.get('title'), resp.get('content') , category=category, post_tag=post_tag  )
         DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
