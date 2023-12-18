@@ -63,6 +63,22 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
 
+    elif data.startswith('oper_cat_'):
+        myid =  data[len('oper_cat_') : ]
+        resp = DataAO.findArticle(from_id, myid )
+        if not resp:
+            logger.info(f"[oper_cat_] {from_id} not found article {myid}")
+            bot.sendMessage(from_id, '文章不存在啊')
+            return 
+        if resp.get('status') != 'INIT':
+            logger.info(f"[oper_cat_] {from_id}  not found article {myid}")
+            bot.sendMessage(from_id, '文章已发布/取消。')
+            return 
+         
+        logger.info(f"[oper_cat_] {from_id}   acticle status {resp.get('status') } {  resp.get('title') } ")
+        DataAO.setUserStatus(from_id, DataAO.TGUSts.DRAFT_ACTICLE_EDIT_CAT)
+
+
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     logger.info(f"[on_chat_message_private] handle msg {msg}")
@@ -101,6 +117,10 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_ACTICLE :
             logger.info(f"[on_chat_message_private] content size:{len(text)} ")
             saveContent(bot, from_id, text )
+            return 
+        elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.WAIT_ACTICLE_EDIT_CAT :
+            logger.info(f"[on_chat_message_private] cat size:{len(text)} ")
+            saveContent_cat(bot, from_id, text )
             return 
         
 
@@ -162,7 +182,17 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(myid) ) 
     sendOperPanel(bot, from_id, title, myid )
     return True 
-    
+
+def saveContent_cat(bot: telepot.Bot , from_id, text:str):
+    statusSet = DataAO.getUserStatus(from_id)
+    artcleId = statusSet.get('params')
+    cats = text.split(",")
+    cats_str = ','.join(cats)
+    DataAO.updateArticle(from_id, artcleId, {'category', cats_str })
+    DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
+    #sendOperPanel(bot, from_id, title, artcleId )
+    return True 
+
 
 def showPublish(bot: telepot.Bot, from_id ):
     

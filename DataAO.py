@@ -26,6 +26,7 @@ class TGUSts:
     WAIT_SET ='WAIT_SET'
     WAIT_ACTICLE = 'WAIT_ACTICLE'
     DRAFT_ACTICLE = 'DRAFT_ACTICLE'
+    DRAFT_ACTICLE_EDIT_CAT = 'DRAFT_ACTICLE_EDIT_CAT'
 
 @Utils.WLocker("status")
 @Utils.wpTry
