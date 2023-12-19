@@ -133,7 +133,11 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     DataAO.access( from_id  )
     text = msg.get('text')
     if not text :
-        logger.info(f'[on_chat_message_private] no hanble msg {msg}') 
+        
+        if 'photo' in msg :
+            procImg(bot, from_id, msg)
+        else:
+            logger.info(f'[on_chat_message_private] no hanble msg {msg}') 
         return 
     text = text.strip()
     logger.info(f"[on_chat_message_private] got text [{text}]")
@@ -179,6 +183,19 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         
 
     return 
+
+
+def procImg(bot : telepot.Bot, from_id, msg):
+    user_status = DataAO.getUserStatus( from_id ).get('status')
+    if user_status != DataAO.TGUSts.DRAFT_ACTICLE_EDIT_FACE:
+        logger.info(f"[procImg] {from_id} ignore photo")
+        return 
+    photos = msg.get('photo')
+    pick_photo = photos[-1]
+    data = bot.getFile( pick_photo.get('file_id') )
+    with open("/tmp/aaaa" , "wb") as f:
+        f.write( data )
+
 
 def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
     logger.info(f'[handleSetting] {from_id} => {text} ')
