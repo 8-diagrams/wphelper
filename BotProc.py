@@ -235,7 +235,7 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
     pMsg = sendOperPanel(bot, from_id, title, myid )
     logger.info("[saveContent] show panel ok")
     logger.info(f"[saveContent] pMsg {pMsg}")
-    DataAO.updateArticle(from_id, myid, {'tg_msg_id', pMsg['message_id'] })
+    DataAO.updateArticle(from_id, myid, {'tg_msg_id': pMsg['message_id'] })
     #send_Msg['message_id']
     return True 
 
