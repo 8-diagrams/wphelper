@@ -194,8 +194,17 @@ def procImg(bot : telepot.Bot, from_id, msg):
     photos = msg.get('photo')
     pick_photo = photos[-1]
     data = bot.getFile( pick_photo.get('file_id') )
-    with open("/tmp/aaaa" , "wb") as f:
-        f.write( data )
+    if not data:
+        return False 
+    
+    # file_path	String	Optional. File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
+    file_path = data.get('file_path')
+    import Utils
+    botkey = Utils.getBotKey()
+    url = f'https://api.telegram.org/file/bot{botkey}/{file_path}'
+    logger.info(f"[procImg] parse url {url}|")
+    saveContent_face(bot, from_id, url )
+
 
 
 def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
