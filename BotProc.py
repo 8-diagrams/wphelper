@@ -63,6 +63,8 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
         bot.sendMessage(from_id, "文章发布成功")
+        delChat( from_id, resp.get('tg_msg_id')  )
+        return 
 
     elif data.startswith('oper_cat_'):
         myid =  data[len('oper_cat_') : ]
@@ -96,8 +98,31 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         DataAO.updateArticle(from_id, myid, {'status':'CANCEL'} )
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT )
         bot.sendMessage(from_id, '文章已设置取消')
-        
+        delChat( from_id, resp.get('tg_msg_id')  )
+        return
+    
+    elif data.startswith('oper_face_'):
+        myid =  data[len('oper_face_') : ]
+        resp = DataAO.findArticle(from_id, myid )
+        if not resp:
+            logger.info(f"[oper_face_] {from_id} not found article {myid}")
+            bot.sendMessage(from_id, '文章不存在啊')
+            return 
+        if resp.get('status') != 'INIT':
+            logger.info(f"[oper_face_] {from_id}  not found article {myid}")
+            bot.sendMessage(from_id, '文章已发布/取消。')
+            return 
+        logger.info(f"[oper_face_] {from_id}   acticle status {resp.get('status') } {  resp.get('title') } ")
+        DataAO.setUserStatus(from_id, DataAO.TGUSts.DRAFT_ACTICLE_EDIT_FACE, myid)
+        bot.sendMessage(from_id,"请回复封面图片或者图片网址")
+        return
+    
 
+        
+@Utils.wpTry
+def delChat(bot: telepot.Bot, from_id, msg_id ):
+    logger.info(f"[delChat] {from_id} - {msg_id} ")
+    bot.deleteMessage( (from_id, msg_id ) )
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     logger.info(f"[on_chat_message_private] handle msg {msg}")
@@ -141,6 +166,10 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
             logger.info(f"[on_chat_message_private] cat size:{len(text)} ")
             saveContent_cat(bot, from_id, text )
             return 
+        elif DataAO.getUserStatus( from_id ).get('status') == DataAO.TGUSts.DRAFT_ACTICLE_EDIT_FACE  :
+            logger.info(f"[on_chat_message_private] face url: {text} ")
+            saveContent_face(bot, from_id, text )
+            return 
         else:
             logger.info(f"[on_chat_message_private]  to default handler no proc")
 
@@ -174,7 +203,7 @@ def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
         bot.sendMessage(from_id, text = '需要：  网址 用户名 密码 备注(可选)')
         return False 
 
-def sendOperPanel(bot, from_id,  title, myid ):
+def sendOperPanel(bot: telepot.Bot, from_id,  title, myid ):
     myid = str(myid)
     inline_keyboard = []
     button = InlineKeyboardButton(text='发布', callback_data=f'oper_pub_{myid}')
@@ -202,7 +231,10 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
     content = "\n".join( line_push[1:])
     myid = DataAO.saveArticle(from_id, sitename, title, content, '' , [] , [] )
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(myid) ) 
-    sendOperPanel(bot, from_id, title, myid )
+    pMsg = sendOperPanel(bot, from_id, title, myid )
+    logger.info(f"[saveContent] pMsg {pMsg}")
+    DataAO.updateArticle(from_id, myid, {'tg_msg_id', pMsg['message_id'] })
+    #send_Msg['message_id']
     return True 
 
 @Utils.wpTry
@@ -217,6 +249,21 @@ def saveContent_cat(bot: telepot.Bot , from_id, text:str):
     DataAO.updateArticle(from_id, artcleId, {'category': cats_str })
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
     bot.sendMessage(from_id, "文章类型更新成功")
+    return True 
+
+@Utils.wpTry
+def saveContent_face(bot: telepot.Bot , from_id, text:str):
+    url = text.strip()
+    statusSet = DataAO.getUserStatus(from_id)
+    artcleId = statusSet.get('params')
+    resp_article = DataAO.findArticle(from_id, artcleId)
+    import WpUtils
+    sett = DataAO.getWpSetting( from_id, resp_article.get('sitename') )
+    wpOp = WpUtils.WPHelper( sett[0].get('website'), sett[0].get('username'), sett[0].get('pwd') )
+    wp_img_id = wpOp.post_img( url )
+    DataAO.updateArticle(from_id, artcleId, {'wp_img_id': wp_img_id })
+    DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
+    bot.sendMessage(from_id, "文章封面更新成功")
     return True 
 
 
