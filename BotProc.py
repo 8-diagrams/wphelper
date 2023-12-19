@@ -215,7 +215,8 @@ def sendOperPanel(bot: telepot.Bot, from_id,  title, myid ):
     button = InlineKeyboardButton(text='放弃', callback_data=f'oper_cancel_{myid}')
     inline_keyboard.append( button )
     markup = InlineKeyboardMarkup( inline_keyboard=[inline_keyboard] )
-    bot.sendMessage( from_id, f"编辑文章： {title}", reply_markup=markup)
+    ret = bot.sendMessage( from_id, f"编辑文章： {title}", reply_markup=markup)
+    return ret 
     
 
 def saveContent(bot: telepot.Bot , from_id, text:str):
@@ -232,6 +233,7 @@ def saveContent(bot: telepot.Bot , from_id, text:str):
     myid = DataAO.saveArticle(from_id, sitename, title, content, '' , [] , [] )
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(myid) ) 
     pMsg = sendOperPanel(bot, from_id, title, myid )
+    logger.info("[saveContent] show panel ok")
     logger.info(f"[saveContent] pMsg {pMsg}")
     DataAO.updateArticle(from_id, myid, {'tg_msg_id', pMsg['message_id'] })
     #send_Msg['message_id']
