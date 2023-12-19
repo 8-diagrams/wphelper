@@ -95,6 +95,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         logger.info(f"[oper_cancel_] {from_id}   acticle status {resp.get('status') } {  resp.get('title') } ")
         DataAO.updateArticle(from_id, myid, {'status':'CANCEL'} )
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT )
+        bot.sendMessage(from_id, '文章已设置取消')
         
 
 
