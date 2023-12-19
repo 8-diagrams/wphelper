@@ -136,6 +136,8 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
         
         if 'photo' in msg :
             procImg(bot, from_id, msg)
+        elif 'document' in msg:
+            procDoc(bot, from_id, msg)
         else:
             logger.info(f'[on_chat_message_private] no hanble msg {msg}') 
         return 
@@ -206,6 +208,28 @@ def procImg(bot : telepot.Bot, from_id, msg):
     saveContent_face(bot, from_id, url )
 
 
+@Utils.wpTry
+def procDoc(bot : telepot.Bot, from_id, msg):
+    user_status = DataAO.getUserStatus( from_id ).get('status')
+    logger.info(f'[procDoc] {from_id} => status : {user_status}')
+    if user_status != DataAO.TGUSts.DRAFT_ACTICLE_EDIT_FACE:
+        logger.info(f"[procDoc] {from_id} ignore photo")
+        return 
+    doc = msg.get('document')
+    if not doc.get('mime_type').startswith('image/'):
+        logger.info(f"[procDoc] {from_id} not photo")
+        return
+    data = bot.getFile( doc.get('file_id') )
+    if not data:
+        return False 
+    
+    # file_path	String	Optional. File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
+    file_path = data.get('file_path')
+    import Utils
+    botkey = Utils.getBotKey()
+    url = f'https://api.telegram.org/file/bot{botkey}/{file_path}'
+    logger.info(f"[procDoc] parse url {url}|")
+    saveContent_face(bot, from_id, url )
 
 def handleSetting(bot: telepot.Bot, from_id, text,  msg :dict  ):
     logger.info(f'[handleSetting] {from_id} => {text} ')
