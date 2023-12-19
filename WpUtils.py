@@ -114,6 +114,9 @@ class WPHelper:
                             'name': f'{fhash}{cc}.{ext}',
                             'type': WPHelper._getCT( resp ),  # mimetype
                     }
+                    if not data['type'].startswith('image/'):
+                        data = WPHelper.rec_data( resp , face_img_url )
+
                     data['bits'] = resp.content 
                     
                     response = wp.call(media.UploadFile(data))
