@@ -58,8 +58,11 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         category = []
         if resp.get('category'):
             category = resp.get('category').split(",")
+        wp_img_id = resp.get('wp_img_id')
+        if wp_img_id :
+            wp_img_id = int(wp_img_id)
         logger.info(f"[oper_pub_] {from_id} begin post {sett[0].get('website')} => {resp.get('title')}")
-        wpid = wpOp.post( resp.get('title'), resp.get('content') , category=category, post_tag=post_tag  )
+        wpid = wpOp.post( resp.get('title'), resp.get('content') , face_img_url = wp_img_id, category=category, post_tag=post_tag  )
         DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
         bot.sendMessage(from_id, "文章发布成功")

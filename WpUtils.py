@@ -80,28 +80,31 @@ class WPHelper:
         wp = Client( self.site + '/xmlrpc.php', self.username, self.pwd )
         attachment_id = None 
         if face_img_url:
-            resp = WPHelper._fetchImage( face_img_url )
-            import hashlib 
-            fhash = hashlib.md5(face_img_url.encode()).hexdigest()  
-            ext = WPHelper._getExt( resp )
-            if resp:
-                # prepare metadata
-                import random
-                cc = random.randint(10000,90000)
-                data = {
-                        'name': f'{fhash}{cc}.{ext}',
-                        'type': WPHelper._getCT( resp ),  # mimetype
-                }
-                data['bits'] = resp.content 
-                
-                response = wp.call(media.UploadFile(data))
-                # response == {
-                #       'id': 6,
-                #       'file': 'picture.jpg'
-                #       'url': 'http://www.example.com/wp-content/uploads/2012/04/16/picture.jpg',
-                #       'type': 'image/jpeg',
-                # }
-                attachment_id = response['id']
+            if type(face_img_url) == int :
+                attachment_id = face_img_url
+            else:
+                resp = WPHelper._fetchImage( face_img_url )
+                import hashlib 
+                fhash = hashlib.md5(face_img_url.encode()).hexdigest()  
+                ext = WPHelper._getExt( resp )
+                if resp:
+                    # prepare metadata
+                    import random
+                    cc = random.randint(10000,90000)
+                    data = {
+                            'name': f'{fhash}{cc}.{ext}',
+                            'type': WPHelper._getCT( resp ),  # mimetype
+                    }
+                    data['bits'] = resp.content 
+                    
+                    response = wp.call(media.UploadFile(data))
+                    # response == {
+                    #       'id': 6,
+                    #       'file': 'picture.jpg'
+                    #       'url': 'http://www.example.com/wp-content/uploads/2012/04/16/picture.jpg',
+                    #       'type': 'image/jpeg',
+                    # }
+                    attachment_id = response['id']
         
         post = WordPressPost()
         post.title = title
