@@ -184,9 +184,10 @@ def on_chat_message_private(bot : telepot.Bot, msg :dict ):
 
     return 
 
-
+@Utils.wpTry
 def procImg(bot : telepot.Bot, from_id, msg):
     user_status = DataAO.getUserStatus( from_id ).get('status')
+    logger.info(f'[procImg] {from_id} => status : {user_status}')
     if user_status != DataAO.TGUSts.DRAFT_ACTICLE_EDIT_FACE:
         logger.info(f"[procImg] {from_id} ignore photo")
         return 
