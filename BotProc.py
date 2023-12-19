@@ -63,7 +63,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         DataAO.updateArticle(from_id, myid, { 'id': myid, "tg_id":from_id, "wp_post_id": wpid, "status":"OK" })
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT)
         bot.sendMessage(from_id, "文章发布成功")
-        delChat( from_id, resp.get('tg_msg_id')  )
+        delChat(bot, from_id, resp.get('tg_msg_id')  )
         return 
 
     elif data.startswith('oper_cat_'):
@@ -98,7 +98,7 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         DataAO.updateArticle(from_id, myid, {'status':'CANCEL'} )
         DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT )
         bot.sendMessage(from_id, '文章已设置取消')
-        delChat( from_id, resp.get('tg_msg_id')  )
+        delChat(bot, from_id, resp.get('tg_msg_id')  )
         return
     
     elif data.startswith('oper_face_'):
