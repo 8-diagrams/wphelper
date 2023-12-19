@@ -138,7 +138,7 @@ def saveArticle(tg_id, sitename, title, content,  face_img_url, post_tag = [], c
 @Utils.wpTry
 def getArticles(tg_id, sitename):
     logger.info( f'[getArticle] BG {tg_id, }')
-    fields_str = 'tg_id, sitename, title, content,  face_img_url, post_tag, category, id, status, tg_msg_id'
+    fields_str = 'tg_id, sitename, title, content,  face_img_url, post_tag, category, id, status, tg_msg_id, wp_img_id'
     fields = fields_str2list(fields_str) 
     sql = f'select  {fields_str}  from articles where tg_id = %s and sitename = %s  order by id desc  '
     conn = dbmgr.Connector( dbpool ).get_conn()
@@ -156,7 +156,7 @@ def getArticles(tg_id, sitename):
 @Utils.wpTry
 def findArticle(tg_id, myid):
     logger.info( f'[findArticles] BG {tg_id, }')
-    fields_str = 'tg_id, sitename, title, content, face_img_url, post_tag, category, id, status, tg_msg_id'
+    fields_str = 'tg_id, sitename, title, content, face_img_url, post_tag, category, id, status, tg_msg_id, wp_img_id'
     fields = fields_str2list(fields_str) 
     sql = f'select  {fields_str}  from articles where tg_id = %s and id = %s  limit 1  '
     conn = dbmgr.Connector( dbpool ).get_conn()
