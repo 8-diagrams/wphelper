@@ -80,6 +80,23 @@ def procCallback(bot : telepot.Bot, msg :dict ):
         DataAO.setUserStatus(from_id, DataAO.TGUSts.DRAFT_ACTICLE_EDIT_CAT, myid)
         bot.sendMessage(from_id,"请回复文章类型 用 ，隔开")
 
+    elif data.startswith('oper_cancel_'):
+        myid =  data[len('oper_cancel_') : ]
+        resp = DataAO.findArticle(from_id, myid )
+        if not resp:
+            logger.info(f"[oper_cancel_] {from_id} not found article {myid}")
+            bot.sendMessage(from_id, '文章不存在啊')
+            return 
+        if resp.get('status') != 'INIT':
+            logger.info(f"[oper_cancel_] {from_id}  not found article {myid}")
+            bot.sendMessage(from_id, '文章已发布/取消。')
+            return 
+         
+        logger.info(f"[oper_cancel_] {from_id}   acticle status {resp.get('status') } {  resp.get('title') } ")
+        DataAO.updateArticle(from_id, myid, {'status':'CANCEL'} )
+        DataAO.setUserStatus(from_id, DataAO.TGUSts.INIT )
+        
+
 
 def on_chat_message_private(bot : telepot.Bot, msg :dict ):
     logger.info(f"[on_chat_message_private] handle msg {msg}")
