@@ -309,14 +309,17 @@ def saveContent_cat(bot: telepot.Bot , from_id, text:str):
 
 @Utils.wpTry
 def saveContent_face(bot: telepot.Bot , from_id, text:str):
+    logger.info(f'[saveContent_face] {from_id, text}| ')
     url = text.strip()
     statusSet = DataAO.getUserStatus(from_id)
     artcleId = statusSet.get('params')
+    logger.info(f'[saveContent_face] {from_id, text}| find article id {artcleId} ')
     resp_article = DataAO.findArticle(from_id, artcleId)
     import WpUtils
     sett = DataAO.getWpSetting( from_id, resp_article.get('sitename') )
     wpOp = WpUtils.WPHelper( sett[0].get('website'), sett[0].get('username'), sett[0].get('pwd') )
     wp_img_id = wpOp.post_img( url )
+    logger.info(f'[saveContent_face] {from_id, text}| wp_img_id => {wp_img_id} ')
     DataAO.updateArticle(from_id, artcleId, {'wp_img_id': wp_img_id })
     DataAO.setUserStatus( from_id, DataAO.TGUSts.DRAFT_ACTICLE, str(artcleId) ) 
     bot.sendMessage(from_id, "文章封面更新成功")

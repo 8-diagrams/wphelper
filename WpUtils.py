@@ -27,7 +27,7 @@ class WPHelper:
     def _getCT(resp ):
         ext_type = 'image/jpeg' 
         if resp.headers.get('Content-Type'):
-            ext_type = 'image/jpeg' 
+            ext_type = resp.headers.get('Content-Type')
         return ext_type 
     
     @staticmethod
@@ -42,15 +42,32 @@ class WPHelper:
             return None 
         except Exception as e:
             return None
-          
+
+    @staticmethod
+    def rec_data(resp, img_url):
+        import hashlib
+        fhash = hashlib.md5(img_url.encode()).hexdigest() 
+        with open(f"/tmp/{fhash}" , "wb") as f:
+            f.write( resp.content )
+        data = {'name': f"/tmp/{fhash}.jpeg", 'type':'image/jpeg' }
+        import filetype 
+        fg = filetype.guess(f"/tmp/{fhash}")
+        if fg :
+            data= {'name': f"/tmp/{fhash}."+fg.extension, 'type':fg.mime }
+        import os
+        os.unlink(f"/tmp/{fhash}")
+        return data 
+    
     def post_img(self, img_url ):
         wp = Client( self.site + '/xmlrpc.php', self.username, self.pwd )
         attachment_id = None 
         try :
             resp = WPHelper._fetchImage( img_url )
             import hashlib 
+            print ( resp.headers )
             fhash = hashlib.md5(img_url.encode()).hexdigest()  
             ext = WPHelper._getExt( resp )
+            
             if resp:
                 # prepare metadata
                 import random
@@ -59,6 +76,8 @@ class WPHelper:
                         'name': f'{fhash}{cc}.{ext}',
                         'type': WPHelper._getCT( resp ),  # mimetype
                 }
+                if not data['type'].startswith('image/'):
+                    data = WPHelper.rec_data( resp , img_url )
                 data['bits'] = resp.content 
                 
                 response = wp.call(media.UploadFile(data))
@@ -130,7 +149,7 @@ if __name__ == '__main__':
 Prompt 和转换不出来的表格如图。'''
     #cid = cp.post('尝试用 Gemini Pro Vision 来解决目前 RAG 的核心问题之一', content )
     #print ("CID", cid)
-    pic_url = 'https://img-home.csdnimg.cn/images/20230921025407.png';
+    pic_url = 'https://api.telegram.org/file/bot6340688692:AAHmzA4len_SDuEfWNmDwfKarlGvaQeMoNU/documents/file_2.jpg';
     #cp._fetchImage('https://img-home.csdnimg.cn/images/20230921025407.png')
     #cid = cp.post('尝试用 Gemini Pro Vision 来解决目前 RAG 的核心问题之一', content, pic_url, category=['AI推荐', '资源分享'] )
     pic_id = cp.post_img( pic_url )
